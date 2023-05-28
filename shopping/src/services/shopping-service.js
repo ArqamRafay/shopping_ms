@@ -7,11 +7,12 @@ class ShoppingService {
     this.repository = new ShoppingRepository();
   }
 
-  async getCart({ id }) {
+  async GetCart({ _id }) {
 
     try {
 
       const cartItems = await this.repository.Cart(_id);
+      console.log(cartItems)
       return FormData(cartItems)
 
     } catch (error) {
@@ -45,6 +46,7 @@ class ShoppingService {
     try {
 
       const cartResult = await this.repository.AddCartItem(customerId, item, qty, isRemove);
+      return FormateData(cartResult);
 
 
     } catch (error) {
@@ -71,20 +73,20 @@ class ShoppingService {
     }
   }
 
-  async GetOrderPayload(userId,order,event){
+  async GetOrderPayload(userId, order, event) {
 
-    if(order){
-         const payload = { 
-            event: event,
-            data: { userId, order }
-        };
+    if (order) {
+      const payload = {
+        event: event,
+        data: { userId, order }
+      };
 
-         return payload
-    }else{
-        return FormateData({error: 'No Order Available'});
+      return payload
+    } else {
+      return FormateData({ error: 'No Order Available' });
     }
 
-}
+  }
 
 }
 

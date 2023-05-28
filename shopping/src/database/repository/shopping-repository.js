@@ -19,9 +19,9 @@ class ShoppingRepository {
 
     async Cart(customerId) {
         try {
-            const cartItems = await CartModel.find({
-                customerId: customerId
-            })
+            console.log('In repo customer id is: ', customerId)
+            const cartItems = await CartModel.find({ customerId: customerId })
+            console.log('Cart item: ',cartItems)
             if (cartItems) {
                 return cartItems
             }
