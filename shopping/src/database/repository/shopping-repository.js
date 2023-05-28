@@ -1,4 +1,4 @@
-const { CustomerModel, ProductModel, OrderModel } = require('../models');
+const { CustomerModel, ProductModel, OrderModel, CartModel } = require('../models');
 const { v4: uuidv4 } = require('uuid');
 const { APIError, BadRequestError } = require('../../utils/app-errors')
 
@@ -19,9 +19,9 @@ class ShoppingRepository {
 
     async Cart(customerId) {
         try {
-            const cartItems = await CartModel.find({
-                customerId: customerId
-            })
+            console.log('In repo customer id is: ', customerId)
+            const cartItems = await CartModel.find({ customerId: customerId })
+            console.log('Cart item: ',cartItems)
             if (cartItems) {
                 return cartItems
             }
@@ -82,13 +82,13 @@ class ShoppingRepository {
         //check transaction for payment Status
 
         try {
-            const profile = await CustomerModel.findById(customerId).populate('cart.product');
+            const cart = await CartModel.findOne({ customerId: customerId })
 
-            if (profile) {
+            if (cart) {
 
                 let amount = 0;
 
-                let cartItems = profile.cart;
+                let cartItems = cart.items;
 
                 if (cartItems.length > 0) {
                     //process Order
@@ -107,14 +107,11 @@ class ShoppingRepository {
                         items: cartItems
                     })
 
-                    profile.cart = [];
-
-                    order.populate('items.product').execPopulate();
+                    cart.cart = [];
                     const orderResult = await order.save();
+                    cart.orders.push(orderResult);
 
-                    profile.orders.push(orderResult);
-
-                    await profile.save();
+                    await cart.save();
 
                     return orderResult;
                 }
